@@ -74,3 +74,23 @@ export function login(req, res) {
     })
 }
 
+export function isHaveUser(req) {
+    if (req.user) { // check request is have user
+        return true;
+    }
+    return false;
+}
+
+export function isAdmin(req) {
+    if (req.user && ree.user.type == "admin") { // check is admin
+        return true;
+    }
+    return false;
+}
+
+export function isUser(req) {
+    if (req.user && ree.user.type == "user") { // check is normal user like customer
+        return true;
+    }
+    return false;
+}
