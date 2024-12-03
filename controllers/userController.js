@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import passwordHash from "password-hash"
+import jwt from "jsonwebtoken"
 
 export async function persist(req, res) {
 
@@ -24,7 +25,7 @@ export async function persist(req, res) {
 
         const newUser = new User(req.body);
         user = await newUser.save(); // Save User
-        res.json({ message: "User Create Success" })
+        res.status(201).json({ message: "User Registration Success" })
 
     } catch (error) {
         const errorMessage = error.message;
@@ -40,4 +41,36 @@ export async function persist(req, res) {
     }
 }
 
+export function login(req, res) {
+
+    User.findOne({
+        $or: [
+            { email: req.body.input },
+            { phoneNo: req.body.input }
+        ]
+    }).then((user) => {
+        if (!user || user.disabled) {
+            return res.status(400).json({ message: "User not found" });
+        }
+        if (!passwordHash.verify(req.body.password, user.password)) {
+            return res.status(400).json({ message: "Password is incorrect" });
+        }
+
+        const payload = {
+            id: user.id,
+            firstName: user.firstName,
+            type: user.type
+        }
+
+        const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '20h' }) // JWT Token
+
+        res.status(200).json({
+            message: "Login success",
+            token: token
+        })
+
+    }).catch((err) => {
+        res.status(500).json({ message: "User Login Fail", error: err })
+    })
+}
 
