@@ -58,8 +58,9 @@ export function login(req, res) {
 
         const payload = {
             id: user.id,
-            firstName: user.firstName,
-            type: user.type
+            name: user.firstName + " " + user.lastName,
+            type: user.type,
+            image: user.image
         }
 
         const token = jwt.sign(payload, process.env.JWT_KEY, { expiresIn: '20h' }) // JWT Token
@@ -72,6 +73,20 @@ export function login(req, res) {
     }).catch((err) => {
         res.status(500).json({ message: "User Login Fail", error: err })
     })
+}
+
+export function retrieveByToken(req, res) {
+    if (!isHaveUser(req)) {
+        return res.status(401).json({
+            message: 'Invalid or expired token',
+            user: null
+        });
+    }
+
+    res.status(200).json({
+        message: 'User validation success',
+        user: req.user
+    });
 }
 
 export function isHaveUser(req) {
