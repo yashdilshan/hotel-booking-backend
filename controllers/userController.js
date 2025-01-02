@@ -1,5 +1,6 @@
 import User from "../models/user.js";
 import passwordHash from "password-hash"
+import jwt from "jsonwebtoken"
 
 export function persist(req, res) {
 
@@ -44,4 +45,51 @@ export function persist(req, res) {
         .catch((err) => {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         })
+}
+
+export function login(req, res) {
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const passwordRegex = /^.{8,}$/
+    const contactNoRegex = /^0\d{9}$/;
+
+    if (!emailRegex.test(req.body.emailOrContactNo) && !contactNoRegex.test(req.body.emailOrContactNo)) {
+        return res.status(400).json({ message: "Please enter valid email or contact no." })
+    }
+    if (!passwordRegex.test(req.body.password)) {
+        return res.status(400).json({ message: "Please enter valid password" })
+    }
+
+    User.findOne({ // find user from email or contact number
+        $or: [
+            { email: req.body.emailOrContactNo },
+            { contactNo: req.body.emailOrContactNo }
+        ]
+    }).then((user) => {
+        if (!user || user.disabled) {
+            return res.status(400).json({ message: "User not found" });
+        }
+        else if (!passwordHash.verify(req.body.password, user.password)) { // check password
+            return res.status(400).json({ message: "Password is incorrect" });
+        }
+
+        const payload = {
+            id: user.id,
+            name: user.firstName + " " + user.lastName,
+            type: user.type,
+            image: user.image,
+            phoneNo: user.phoneNo
+        }
+
+        const token = jwt.sign(payload, process.env.JWT_KEY) // Generate Token
+
+        res.status(200).json({
+            message: "Login success",
+            userType: user.type, // for identify authorized users
+            token: token
+        })
+
+    }).catch((err) => {
+        res.status(500).json({ message: "Server error occurred", error: err.message });
+    })
 }
