@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import cors from "cors"
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
+import userRouter from "./routers/userRouter.js";
 
 const app = express();
 
@@ -12,6 +13,9 @@ app.use(bodyParser.json());
 
 // database connection
 mongoose.connect(process.env.CONNECTION_STRING).then(() => console.log("Database connection success")).catch(() => console.log("Database connection fail"));
+
+// Routers
+app.use("/api/user" ,userRouter);
 
 app.listen(5000, (req, res) => {
     console.log("The program runs on port 5000");
