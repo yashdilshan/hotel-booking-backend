@@ -93,3 +93,26 @@ export function login(req, res) {
         res.status(500).json({ message: "Server error occurred", error: err.message });
     })
 }
+
+// ------------- users checking functions -------------
+
+export function isHaveUser(req) {
+    if (req.user) { // check request is have user
+        return true;
+    }
+    return false;
+}
+
+export function isAdmin(req) {
+    if (req.user && req.user.type == "admin") { // check is admin
+        return true;
+    }
+    return false;
+}
+
+export function isUser(req) {
+    if (req.user && req.user.type == "user") { // check is normal user like customer
+        return true;
+    }
+    return false;
+}
