@@ -154,6 +154,29 @@ export function retrieve(req, res) {
     }
 }
 
+export function findByToken(req, res) {
+    if (!isHaveUser(req)) {
+        return res.status(401).json({
+            message: 'Invalid or expired token'
+        });
+    }
+
+    User.findOne({ id: req.user.id })
+        .then((user) => {
+            if (!user || user.disabled) {
+                return res.status(401).json({
+                    message: 'Invalid or expired token'
+                });
+            }
+            res.status(200).json({
+                message: 'User validation success',
+                user: req.user
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        })
+}
 
 // ------------- users checking functions -------------
 
