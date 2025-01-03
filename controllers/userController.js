@@ -94,6 +94,67 @@ export function login(req, res) {
     })
 }
 
+export function retrieve(req, res) {
+    if (!isAdmin(req)) {
+        return res.status(401).json({ message: "Admin access required" });
+    }
+    const type = req.query.type; // filtering option
+    const pageNumber = req.query.pageNo; // page number
+    const recordCount = req.query.recordCount; // one page record count
+    const skipRecord = (pageNumber - 1) * recordCount; // number of records to skip
+
+    if (type == "all") { // all filter option
+        User.find({ disabled: false }).sort({ id: -1 }).skip(skipRecord).limit(recordCount)
+            .then((users) => {
+                User.countDocuments({ disabled: false })
+                    .then((totalRecord) => {
+                        res.status(200).json({
+                            message: "Users found",
+                            users: users,
+                            totalPage: Math.ceil(totalRecord / recordCount)
+                        });
+                    })
+
+            })
+            .catch((err) => {
+                res.json({ message: "Server error occurred", error: err.message });
+            })
+    }
+    else if (type == "disabled") { // disabled filter option
+        User.find({ disabled: true }).sort({ id: -1 }).skip(skipRecord).limit(recordCount)
+            .then((users) => {
+                User.countDocuments({ disabled: true })
+                    .then((totalRecord) => {
+                        res.status(200).json({
+                            message: "Users found",
+                            users: users,
+                            totalPage: Math.ceil(totalRecord / recordCount)
+                        });
+                    })
+            })
+            .catch((err) => {
+                res.status(500).json({ message: "Server error occurred", error: err.message });
+            });
+    }
+    else { // admin and user(customer) filter option
+        User.find({ type: type, disabled: false }).sort({ id: -1 }).skip(skipRecord).limit(recordCount)
+            .then((users) => {
+                User.countDocuments({ type: type, disabled: false })
+                    .then((totalRecord) => {
+                        res.status(200).json({
+                            message: "Users found",
+                            users: users,
+                            totalPage: Math.ceil(totalRecord / recordCount)
+                        });
+                    })
+            })
+            .catch((err) => {
+                res.status(500).json({ message: "Server error occurred", error: err.message });
+            });
+    }
+}
+
+
 // ------------- users checking functions -------------
 
 export function isHaveUser(req) {
