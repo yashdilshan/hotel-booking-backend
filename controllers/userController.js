@@ -200,6 +200,18 @@ export function findByContactNo(req, res) {
         });
 }
 
+export function remove(req, res) {
+    if (!isAdmin(req)) {
+        return res.status(401).json({ message: "Admin access required" });
+    }
+
+    User.deleteOne({ id: req.params.id })
+        .then(() => {
+            res.status(200).json({ message: "User Delete Successful" });
+        }).catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        })
+}
 
 
 // ------------- users checking functions -------------
