@@ -213,6 +213,47 @@ export function remove(req, res) {
         })
 }
 
+export function update(req, res) {
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const contactNoRegex = /^0\d{9}$/;
+
+    if (!isHaveUser(req)) {
+        return res.status(401).json({ message: "Registered user access required" });
+    }
+    if (!emailRegex.test(req.body.email)) {
+        return res.status(400).json({ message: "Please enter valid email address" })
+    }
+    if (!contactNoRegex.test(req.body.contactNo)) {
+        return res.status(400).json({ message: "Please enter valid contact number" })
+    }
+
+    req.body.image = req.body.title == "Mr" ? "https://img.icons8.com/emoji/48/man-with-beard-light-skin-tone.png" : "https://img.icons8.com/emoji/48/woman-light-skin-tone.png"
+    delete req.body.password; // delete password data to stop replacing password
+
+    // update user data
+    User.updateOne({ id: req.body.id }, req.body)
+        .then(() => {
+            if (req.body.newPassword) {
+                return res.status(200).json({ message: "Password Update Successful" });
+            }
+            res.status(200).json({ message: "User Update Successful" });
+        })
+        .catch((err) => {
+            const errorMessage = err.message;
+            if (errorMessage.includes("email_1")) {
+                res.status(409).json({ message: "Email is already used" })
+            }
+            else if (errorMessage.includes("contactNo_1")) {
+                res.status(409).json({ message: "Contact No is already used" })
+            }
+            else {
+                res.status(500).json({ message: "Server error occurred", error: errorMessage });
+            }
+
+        })
+}
+
 
 // ------------- users checking functions -------------
 

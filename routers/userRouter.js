@@ -1,5 +1,5 @@
 import express from "express"
-import { findByContactNo, findByToken, login, persist, remove, retrieve } from "../controllers/userController.js";
+import { findByContactNo, findByToken, login, persist, remove, retrieve, update } from "../controllers/userController.js";
 
 const userRouter = express.Router();
 
@@ -14,5 +14,7 @@ userRouter.get("/token", findByToken);
 userRouter.get("/contactNo/:contactNo", findByContactNo);
 
 userRouter.delete("/:id", remove);
+
+userRouter.put("/", update);
 
 export default userRouter
