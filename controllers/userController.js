@@ -156,9 +156,7 @@ export function retrieve(req, res) {
 
 export function findByToken(req, res) {
     if (!isHaveUser(req)) {
-        return res.status(401).json({
-            message: 'Invalid or expired token'
-        });
+        return res.status(401).json({ message: 'Invalid or expired token' });
     }
 
     User.findOne({ id: req.user.id })
@@ -177,6 +175,32 @@ export function findByToken(req, res) {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         })
 }
+
+export function findByContactNo(req, res) {
+    if (!isHaveUser(req)) {
+        return res.status(401).json({ message: "Registered user access required" });
+    }
+
+    User.findOne({ contactNo: req.params.contactNo })
+        .then((user) => {
+            if (!user) {
+                return res.json({
+                    message: "User not found"
+                });
+            }
+
+            user.password = "" // password not retrieve
+            res.json({
+                message: "User found",
+                user: user
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        });
+}
+
+
 
 // ------------- users checking functions -------------
 
