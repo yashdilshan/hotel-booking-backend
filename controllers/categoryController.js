@@ -59,3 +59,23 @@ export function findByName(req, res) {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         });
 }
+
+export function update(req, res) {
+    if (!isAdmin(req)) {
+        return res.status(401).json({ message: "Admin access required" });
+    }
+
+    Category.updateOne({ id: req.body.id }, req.body)
+        .then(() => {
+            res.status(200).json({ message: "Category Update Successful" });
+        })
+        .catch((err) => {
+            const errorMessage = err.message;
+            if (errorMessage.includes("name_1")) {
+                res.status(409).json({ message: "Category name is already used" })
+            }
+            else {
+                res.status(500).json({ message: "Server error occurred", error: errorMessage });
+            }
+        });
+}
