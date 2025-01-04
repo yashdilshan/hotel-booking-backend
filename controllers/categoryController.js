@@ -44,3 +44,18 @@ export function retrieve(req, res) {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         })
 }
+
+export function findByName(req, res) {
+    Category.findOne({ name: { $regex: new RegExp(`^${req.params.name}$`, 'i') } }) // name case sensitivity remove.
+        .then((category) => {
+            if (!category) {
+                return res.status(404).json({ message: "Category Not found" });
+            }
+            res.status(200).json({
+                message: "Category found",
+                category: category
+            });
+        }).catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        });
+}
