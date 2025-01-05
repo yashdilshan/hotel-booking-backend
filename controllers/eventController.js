@@ -30,3 +30,16 @@ export function persist(req, res) {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         })
 }
+
+export function retrieve(req, res) {
+    Event.find({ disabled: req.query.disabled })
+        .then((events) => {
+            if (events.length === 0) {
+                return res.status(404).json({ message: "Event not found" });
+            }
+            res.status(201).json(events);
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        })
+}
