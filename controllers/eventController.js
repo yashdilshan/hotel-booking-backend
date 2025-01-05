@@ -75,3 +75,17 @@ export function findById(req, res) {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         });
 }
+
+export function update(req, res) {
+    if (!isAdmin(req)) {
+        return res.status(401).json({ message: "Admin access required" });
+    }
+
+    Event.updateOne({ id: req.body.id }, req.body)
+        .then(() => {
+            res.status(200).json({ message: "Event Update Successful" });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        })
+}
