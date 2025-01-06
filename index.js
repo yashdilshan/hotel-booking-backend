@@ -7,6 +7,7 @@ import userRouter from "./routers/userRouter.js";
 import authenticate from "./middleware/authentication.js";
 import categoryRouter from "./routers/categoryRouter.js";
 import eventRouter from "./routers/eventRouter.js";
+import reviewRouter from "./routers/reviewRouter.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ mongoose.connect(process.env.CONNECTION_STRING).then(() => console.log("Database
 app.use("/api/user", userRouter);
 app.use("/api/category", categoryRouter);
 app.use("/api/event", eventRouter);
+app.use("/api/review", reviewRouter);
 
 app.listen(5000, (req, res) => {
     console.log("The program runs on port 5000");
