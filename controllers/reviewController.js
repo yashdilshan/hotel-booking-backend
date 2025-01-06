@@ -1,5 +1,5 @@
 import Review from "../models/review.js";
-import { isUser } from "./userController.js";
+import { isAdmin, isUser } from "./userController.js";
 
 export function persist(req, res) {
     if (!isUser(req)) {
@@ -41,4 +41,27 @@ export function retrieve(req, res) {
         .catch((err) => {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         })
+}
+
+export function findByName(req, res) {
+    if (!isAdmin(req)) {
+        return res.status(401).json({ message: "Admin access required" });
+    }
+
+    const namePart = req.params.name;
+    const regex = new RegExp(namePart, "i"); // "i" makes it case-insensitive
+
+    Review.find({ name: regex })
+        .then((reviews) => {
+            if (reviews.length === 0) {
+                return res.status(404).json({ message: "Review not found" });
+            }
+            res.status(200).json({
+                message: "Reviews found",
+                reviews: reviews
+            });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        });
 }
