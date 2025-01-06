@@ -6,7 +6,7 @@ export function persist(req, res) {
         return res.status(401).json({ message: "User access required" });
     }
     console.log(req.user);
-    
+
     req.body.email = req.user.email;
     req.body.name = req.user.name;
 
@@ -24,6 +24,19 @@ export function persist(req, res) {
                 .catch((err) => {
                     res.status(500).json({ message: "Server error occurred", error: err.message });
                 })
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        })
+}
+
+export function retrieve(req, res) {
+    Review.find({ disabled: req.query.disabled })
+        .then((reviews) => {
+            if (reviews.length === 0) {
+                return res.status(404).json({ message: "Review not found" });
+            }
+            res.status(200).json(reviews);
         })
         .catch((err) => {
             res.status(500).json({ message: "Server error occurred", error: err.message });
