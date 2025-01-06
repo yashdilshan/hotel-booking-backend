@@ -78,7 +78,8 @@ export function login(req, res) {
             name: user.firstName + " " + user.lastName,
             type: user.type,
             image: user.image,
-            phoneNo: user.phoneNo
+            contactNo: user.contactNo,
+            email: user.email
         }
 
         const token = jwt.sign(payload, process.env.JWT_KEY) // Generate Token
@@ -234,9 +235,6 @@ export function update(req, res) {
     // update user data
     User.updateOne({ id: req.body.id }, req.body)
         .then(() => {
-            if (req.body.newPassword) {
-                return res.status(200).json({ message: "Password Update Successful" });
-            }
             res.status(200).json({ message: "User Update Successful" });
         })
         .catch((err) => {
