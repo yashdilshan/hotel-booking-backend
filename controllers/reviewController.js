@@ -97,6 +97,20 @@ export function update(req, res) {
         })
 }
 
+export function enableDisable(req, res) {
+    if (!isAdmin(req)) {
+        return res.status(401).json({ message: "Admin access required" });
+    }
+
+    Review.updateOne({ id: req.body.id }, req.body)
+        .then(() => {
+            res.status(200).json({ message: "Review Update Successful" });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        })
+}
+
 export async function remove(req, res) {
     if (!isHaveUser(req)) {
         return res.status(401).json({ message: "User access required" });
