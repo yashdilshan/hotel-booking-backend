@@ -30,7 +30,7 @@ export function persist(req, res) {
 }
 
 export function retrieve(req, res) {
-    Review.find({ disabled: req.query.disabled })
+    Review.find({ disabled: req.query.disabled }).sort({ id: -1 })
         .then((reviews) => {
             if (reviews.length === 0) {
                 return res.status(404).json({ message: "Review not found" });
@@ -100,7 +100,7 @@ export function update(req, res) {
 export function enableDisable(req, res) {
     if (!isAdmin(req)) {
         return res.status(401).json({ message: "Admin access required" });
-    }   
+    }
 
     const state = req.body.disabled
     Review.updateOne({ id: req.body.id }, req.body)
