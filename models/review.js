@@ -24,10 +24,6 @@ const reviewSchema = mongoose.Schema({
         type: String,
         default: ""
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
     disabled: {
         type: Boolean,
         default: true

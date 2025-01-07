@@ -5,7 +5,6 @@ export function persist(req, res) {
     if (!isUser(req)) {
         return res.status(401).json({ message: "User access required" });
     }
-    console.log(req.user);
 
     req.body.email = req.user.email;
     req.body.name = req.user.name;
@@ -31,7 +30,7 @@ export function persist(req, res) {
 }
 
 export function retrieve(req, res) {
-    Review.find({ disabled: req.query.disabled })
+    Review.find({ disabled: req.query.disabled }).sort({ id: -1 })
         .then((reviews) => {
             if (reviews.length === 0) {
                 return res.status(404).json({ message: "Review not found" });
@@ -51,7 +50,7 @@ export function findByName(req, res) {
     const namePart = req.params.name;
     const regex = new RegExp(namePart, "i"); // "i" makes it case-insensitive
 
-    Review.find({ name: regex })
+    Review.find({ name: regex }).sort({ id: -1 })
         .then((reviews) => {
             if (reviews.length === 0) {
                 return res.status(404).json({ message: "Review not found" });
@@ -71,7 +70,7 @@ export function findByEmail(req, res) {
         return res.status(401).json({ message: "User access required" });
     }
 
-    Review.find({ email: req.params.email })
+    Review.find({ email: req.params.email }).sort({ id: -1 })
         .then((reviews) => {
             if (reviews.length === 0) {
                 return res.status(404).json({ message: "Review not found" });
@@ -84,13 +83,29 @@ export function findByEmail(req, res) {
 }
 
 export function update(req, res) {
-    if (!isHaveUser(req)) {
+    if (!isUser(req)) {
         return res.status(401).json({ message: "User access required" });
     }
+    delete req.body.disabled;
 
     Review.updateOne({ id: req.body.id }, req.body)
         .then(() => {
             res.status(200).json({ message: "Review Update Successful" });
+        })
+        .catch((err) => {
+            res.status(500).json({ message: "Server error occurred", error: err.message });
+        })
+}
+
+export function enableDisable(req, res) {
+    if (!isAdmin(req)) {
+        return res.status(401).json({ message: "Admin access required" });
+    }
+
+    const state = req.body.disabled
+    Review.updateOne({ id: req.body.id }, req.body)
+        .then(() => {
+            res.status(200).json({ message: `Review ${state ? "disable" : "enable"} Successful` });
         })
         .catch((err) => {
             res.status(500).json({ message: "Server error occurred", error: err.message });
