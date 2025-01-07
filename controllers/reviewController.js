@@ -100,12 +100,9 @@ export function update(req, res) {
 export function enableDisable(req, res) {
     if (!isAdmin(req)) {
         return res.status(401).json({ message: "Admin access required" });
-    }
+    }   
 
-    console.log(req.body);
-    
     const state = req.body.disabled
-
     Review.updateOne({ id: req.body.id }, req.body)
         .then(() => {
             res.status(200).json({ message: `Review ${state ? "disable" : "enable"} Successful` });
