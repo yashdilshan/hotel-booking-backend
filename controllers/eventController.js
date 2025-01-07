@@ -48,8 +48,8 @@ export function findByName(req, res) {
 
     const namePart = req.params.name;
     const regex = new RegExp(namePart, "i"); // "i" makes it case-insensitive
-    
-    Event.findOne({ name: regex })
+
+    Event.find({ name: regex }).sort({ id: -1 })
         .then((event) => {
             if (!event) {
                 return res.status(404).json({ message: "Event Not found" });

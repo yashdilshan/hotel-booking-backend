@@ -70,7 +70,7 @@ export function findByEmail(req, res) {
         return res.status(401).json({ message: "User access required" });
     }
 
-    Review.find({ email: req.params.email })
+    Review.find({ email: req.params.email }).sort({ id: -1 })
         .then((reviews) => {
             if (reviews.length === 0) {
                 return res.status(404).json({ message: "Review not found" });
