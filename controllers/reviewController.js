@@ -83,9 +83,10 @@ export function findByEmail(req, res) {
 }
 
 export function update(req, res) {
-    if (!isHaveUser(req)) {
+    if (!isUser(req)) {
         return res.status(401).json({ message: "User access required" });
     }
+    delete req.body.disabled;
 
     Review.updateOne({ id: req.body.id }, req.body)
         .then(() => {
