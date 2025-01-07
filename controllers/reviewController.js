@@ -50,7 +50,7 @@ export function findByName(req, res) {
     const namePart = req.params.name;
     const regex = new RegExp(namePart, "i"); // "i" makes it case-insensitive
 
-    Review.find({ name: regex })
+    Review.find({ name: regex }).sort({ id: -1 })
         .then((reviews) => {
             if (reviews.length === 0) {
                 return res.status(404).json({ message: "Review not found" });
