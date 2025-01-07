@@ -5,7 +5,6 @@ export function persist(req, res) {
     if (!isUser(req)) {
         return res.status(401).json({ message: "User access required" });
     }
-    console.log(req.user);
 
     req.body.email = req.user.email;
     req.body.name = req.user.name;
