@@ -93,3 +93,7 @@ export function remove(req, res) {
             res.status(500).json({ message: "Server error occurred", error: err.message });
         })
 }
+
+export function getAll(req, res){
+    console.log(req);
+}
