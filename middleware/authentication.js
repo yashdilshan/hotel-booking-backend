@@ -13,3 +13,5 @@ export default function authenticate(req, res, next) {
         })
     } else next();
 }
+
+// jsonwebtoken
